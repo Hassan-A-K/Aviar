@@ -1,0 +1,43 @@
+*{
+  margin: 0;
+}
+
+.App{
+  overflow: hidden; /* Hide scrollbars */
+  background-color: black;
+  background-image: url("./assets/starBack.png");
+  background-repeat: no-repeat, repeat;
+/* Set a specific height */
+  min-height: 500px; 
+
+  /* Create the parallax scrolling effect */
+  background-attachment: fixed;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  height: 100%;
+}
+
+.app__navBarLogo {
+  background-color: white;
+  padding: 20px;
+  border-bottom: 1px solid white;
+  object-fit:  contain;
+}
+
+.logo {
+  max-width: 200px;
+}
+
+.todayGallery{
+  text-align: center;
+  color: white;
+  padding: 75px
+}
+
+.app__signup{
+ display: flex;
+ flex-direction: column;
+ color: black;
+}
+
