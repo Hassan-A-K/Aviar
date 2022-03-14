@@ -25,8 +25,27 @@
     display: flex; /*make into a row */
     align-items: center;
     padding: 20px;
+    opacity: 1;
 }
 
 .post__avatar {
     margin-right: 15px;
+}
+
+.post__commentBox{
+    color: white;
+    display: flex;
+    opacity: .3;
+}
+
+.post__input {
+    color: white;
+    flex: 1;
+    border: none;
+    padding: 10px;
+}
+
+.post__button {
+    color: white;
+    max-width: 70px;
 }

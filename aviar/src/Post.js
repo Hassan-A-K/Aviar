@@ -1,12 +1,50 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import './Post.css';
 //import Avatar from "@material-ui-/core/Avatar";
 import { Avatar } from '@material-ui/core';
+import { db } from './firebase';
+import firebase from 'firebase/compat/app';
 
 
 
-function Post({creator, statement, imageURL}){
-    return(
+
+
+function Post({postId, creator, user, statement, imageURL}){
+    const [comments, setComments] = useState([]);
+    const [comment, setComment] = useState('')
+    
+    
+    const postComment = (event) => {
+        event.preventDefault();
+
+        db.collection('posts').doc(postId)
+        .collection(postId).collection("comments").add({
+            text: comment,
+            creator: user.displayName,
+            timestamp: firebase.firestore.FieldValue
+        })
+        setComment('');
+    }
+
+    useEffect(() => {
+        let unsubscribe;
+        if (postId) { // <- 2. it refires this
+            unsubscribe = db
+            .collection('posts')
+            .doc(postId)
+            .collection('comments')
+            .orderBy('timestamp', 'desc')
+            .onSnapshot((snapshot) => {
+                setComments(snapshot.docs.map((doc) => doc.data()));
+            });
+        }
+
+        return () => {
+            unsubscribe();
+        };
+    },[postId]); // <- 1. is this variable changes
+
+    return(//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         <div className="post">
             {/* image */}
             <img className="post__piece"
@@ -24,7 +62,22 @@ function Post({creator, statement, imageURL}){
                 {/* caption */}
                 <h4 className='post__text'><strong>{creator}</strong> {statement}</h4>
             </div>
-
+            <form className="post__commentBox">
+                <input className ="post__input"
+                type="text"
+                placeholder="Share a few words"
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                />
+            <button
+                className='post__button'
+                disabled={!comment}
+                type="submit"
+                onClick={postComment}
+            >
+                Post
+            </button>
+            </form>
         </div>
     )
 }
