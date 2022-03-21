@@ -9,22 +9,10 @@ import firebase from 'firebase/compat/app';
 
 
 
+
 function Post({postId, creator, user, statement, imageURL}){
     const [comments, setComments] = useState([]);
     const [comment, setComment] = useState('')
-    
-    
-    const postComment = (event) => {
-        event.preventDefault();
-
-        db.collection('posts').doc(postId)
-        .collection(postId).collection("comments").add({
-            text: comment,
-            creator: user.displayName,
-            timestamp: firebase.firestore.FieldValue
-        })
-        setComment('');
-    }
 
     useEffect(() => {
         let unsubscribe;
@@ -33,7 +21,7 @@ function Post({postId, creator, user, statement, imageURL}){
             .collection('posts')
             .doc(postId)
             .collection('comments')
-            .orderBy('timestamp', 'desc')
+            //.orderBy('timestamp', 'desc')
             .onSnapshot((snapshot) => {
                 setComments(snapshot.docs.map((doc) => doc.data()));
             });
@@ -42,7 +30,19 @@ function Post({postId, creator, user, statement, imageURL}){
         return () => {
             unsubscribe();
         };
-    },[postId]); // <- 1. is this variable changes
+    },[postId]); // <- 1. depedency var if this variable changes
+
+    const postComment = (event) => {
+        event.preventDefault();
+
+        db.collection('posts').doc(postId)
+        .collection(postId).collection("comments").add({
+            text: comment,
+            username: user.displayName,
+            timestamp: firebase.firestore.FieldValue
+        })
+        setComment('');
+    }
 
     return(//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         <div className="post">
@@ -62,22 +62,34 @@ function Post({postId, creator, user, statement, imageURL}){
                 {/* caption */}
                 <h4 className='post__text'><strong>{creator}</strong> {statement}</h4>
             </div>
-            <form className="post__commentBox">
-                <input className ="post__input"
-                type="text"
-                placeholder="Share a few words"
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-                />
-            <button
-                className='post__button'
-                disabled={!comment}
-                type="submit"
-                onClick={postComment}
-            >
-                Post
-            </button>
-            </form>
+            <div className="post__comments">
+                {
+                comments.map((comment) => (
+                    <p>
+                        <strong>{comment.username}</strong> {comment.text}
+                    </p>
+                ))
+                }
+            </div>
+            {user && (
+                <form className="post__commentBox">
+                    <input className ="post__input"
+                    type="text"
+                    placeholder="Share a few words"
+                    value={comment}
+                    onChange={(e) => setComment(e.target.value)}
+                    />
+                    <button
+                    className='post__button'
+                    disabled={!comment}
+                    type="submit"
+                    onClick={postComment}
+                    >
+                    Post
+                    </button>
+                </form>
+            )}
+           
         </div>
     )
 }
